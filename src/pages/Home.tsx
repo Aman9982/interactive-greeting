@@ -1,68 +1,97 @@
 import { motion } from 'motion/react';
-import { Flower } from '../components/Flower';
-import { Chocolate } from '../components/Chocolate';
-import { Butterfly } from '../components/Butterfly';
-import { Teddy } from '../components/Teddy';
+import { ArrowRight, Heart, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { PageShell } from '../components/PageShell';
+import { GlassButton } from '../components/GlassButton';
+import { surpriseConfig } from '../config/surprise';
 
 export function Home() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden"
-    >
-      {/* Background gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-rose-900/40 via-zinc-950 to-zinc-950"></div>
-      
-      {/* Decorative Butterflies */}
-      <Butterfly className="top-[20%] left-[-10%]" duration={12} delay={0} />
-      <Butterfly className="top-[60%] left-[-20%]" duration={18} delay={4} />
-      <Butterfly className="bottom-[10%] right-[-10%]" duration={15} delay={2} />
+    <PageShell className="flex items-center justify-center overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.18),_transparent_30%),radial-gradient(circle_at_bottom,_rgba(167,139,250,0.14),_transparent_28%)]" />
 
-      {/* Decorative Flowers */}
-      <Flower type="tulip" className="top-[10%] left-[10%]" delay={0.2} />
-      <Flower type="lily" className="bottom-[20%] left-[15%]" delay={0.4} />
-      <Flower type="tulip" className="top-[15%] right-[15%]" delay={0.6} />
-      <Flower type="lily" className="bottom-[15%] right-[10%]" delay={0.8} />
-      
-      {/* Decorative Chocolates */}
-      <Chocolate className="top-[30%] left-[20%]" delay={1} />
-      <Chocolate className="bottom-[30%] right-[25%]" delay={1.2} />
-      <Chocolate className="top-[40%] right-[15%]" delay={1.4} />
-
-      {/* Taddy! */}
-      <Teddy className="absolute bottom-[5%] left-[50%] -translate-x-1/2 md:left-[30%] opacity-80" delay={2} />
-      <Teddy className="absolute top-[10%] left-[50%] -translate-x-1/2 md:left-[70%] opacity-80 scale-75" delay={2.5} />
-
-      <div className="relative z-10 text-center max-w-2xl mx-auto p-8 rounded-3xl backdrop-blur-sm bg-zinc-900/30 border border-rose-900/30 shadow-2xl">
-        <motion.h1 
-          className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-br from-rose-300 via-rose-100 to-amber-200 text-transparent bg-clip-text tracking-tighter"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center text-center"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-rose-400 shadow-[0_12px_35px_rgba(244,114,182,0.12)] backdrop-blur-xl"
         >
-          Devi ji
-        </motion.h1>
-        
-        <motion.h2
-          className="text-2xl md:text-3xl text-rose-300/80 mb-8 font-light italic"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
-        >
-          (aka Malkin)
-        </motion.h2>
+          <Sparkles size={14} className="text-pink-400" />
+          A little love, made just for you
+        </motion.div>
 
-        <motion.p
-          className="text-lg md:text-xl text-zinc-300 font-light leading-relaxed"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1, delay: 0.9 }}
+        <motion.div
+          className="relative overflow-hidden rounded-[2.1rem] border border-white/70 bg-white/60 px-6 py-10 shadow-[0_30px_100px_rgba(244,114,182,0.16)] backdrop-blur-2xl sm:px-10 lg:px-16 lg:py-14"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.2 }}
         >
-          Welcome to your magical surprise. A world of dark chocolate, blooming lilies, tulips, and monarch butterflies, crafted just for you.
-        </motion.p>
-      </div>
-    </motion.div>
+          <img src={surpriseConfig.heroImage} alt="Romantic soft glow" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,_rgba(255,255,255,0.75),_rgba(255,244,247,0.4))]" />
+
+          <div className="relative z-10">
+            <motion.h1
+              className="mx-auto max-w-4xl text-5xl font-semibold tracking-[-0.04em] text-rose-500 sm:text-7xl lg:text-8xl"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.25 }}
+            >
+              {surpriseConfig.heroTitle}
+            </motion.h1>
+
+            <motion.div
+              className="mt-4 space-y-2 text-2xl font-medium text-rose-400 sm:text-3xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.35 }}
+            >
+              <p>{surpriseConfig.heroSubtitle}</p>
+              <p>{surpriseConfig.heroSubtitle2}</p>
+            </motion.div>
+
+            <motion.p
+              className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.45 }}
+            >
+              {surpriseConfig.heroBody}
+            </motion.p>
+
+            <motion.div
+              className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.55 }}
+            >
+              <GlassButton>
+                <Link to="/message" className="flex items-center gap-2">
+                  Open the letter <ArrowRight size={16} />
+                </Link>
+              </GlassButton>
+              <GlassButton>
+                <Link to="/gallery">See the memories</Link>
+              </GlassButton>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="mt-10 flex items-center gap-3 rounded-full border border-white/70 bg-white/70 px-5 py-3 text-sm uppercase tracking-[0.32em] text-rose-400 shadow-[0_12px_35px_rgba(244,114,182,0.12)] backdrop-blur-xl"
+        >
+          <Heart size={14} className="text-pink-400" />
+          Stay a while
+        </motion.div>
+      </motion.div>
+    </PageShell>
   );
 }

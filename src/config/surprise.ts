@@ -1,0 +1,43 @@
+export const surpriseConfig = {
+  enableCountdown: false,
+  recipientName: 'Ritu',
+  recipientNickname: 'Jerry',
+  recipientTitle: 'My Nebula',
+  countdownDate: '2026-07-15',
+  countdownTime: '20:00',
+  countdownTarget: '2026-07-15T20:00:00',
+  countdownMessage: "This little surprise isn't ready yet...",
+  heroTitle: 'Dear Ritu 🌸',
+  heroSubtitle: 'My Jerry.',
+  heroSubtitle2: 'My Nebula.',
+  heroBody: 'Welcome to your little surprise ❤️',
+  musicFile: '/assets/music/romance.wav',
+  heroImage: '/assets/images/backgrounds/hero.webp',
+  letterImage: '/assets/images/couples/letter-scene.webp',
+  giftImage: '/assets/images/flowers/roses.webp',
+  rosesImage: '/assets/images/flowers/roses.webp',
+  teddyImage: '/assets/images/girl/portrait.webp',
+  candleImage: '/assets/images/decorations/candle.webp',
+  galleryImages: [
+    {
+      src: '/assets/images/gallery/memory-1.webp',
+      title: 'First memory',
+      note: 'A little sparkle from the first day.',
+    },
+    {
+      src: '/assets/images/gallery/memory-2.webp',
+      title: 'Soft evenings',
+      note: 'The kind that make your heart feel calm.',
+    },
+    {
+      src: '/assets/images/gallery/memory-3.webp',
+      title: 'Moonlit glow',
+      note: 'For all the quiet, beautiful moments.',
+    },
+    {
+      src: '/assets/images/gallery/memory-4.webp',
+      title: 'Little magic',
+      note: 'The kind that stays with you.',
+    },
+  ],
+};

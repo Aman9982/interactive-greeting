@@ -6,3 +6,8 @@ coverage/
 *.log
 .env*
 !.env.example
+<<<<<<< HEAD
+=======
+*.local
+npm-debug.log*
+>>>>>>> 61a56f9 (Refactor project for portfolio)

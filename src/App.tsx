@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { LockScreen } from './components/LockScreen';
 import { Home } from './pages/Home';
 import { Message } from './pages/Message';
@@ -8,33 +8,35 @@ import { More } from './pages/More';
 import { FunPage } from './pages/Fun';
 import { Gallery } from './pages/Gallery';
 import { SparkleCursor } from './components/SparkleCursor';
-import { Heart, Sparkles, Gift, Camera, Star } from 'lucide-react';
+import { PremiumBackground } from './components/PremiumBackground';
+import { appRoutes } from './config/routes';
+import { surpriseConfig } from './config/surprise';
+import { Volume2, VolumeX } from 'lucide-react';
+
+const unlockTimestamp = new Date(`${surpriseConfig.countdownDate}T${surpriseConfig.countdownTime}`).getTime();
 
 function Navigation() {
   const location = useLocation();
 
-  const links = [
-    { path: '/', label: 'Home', icon: Heart },
-    { path: '/message', label: 'Message', icon: Sparkles },
-    { path: '/gallery', label: 'Gallery', icon: Camera },
-    { path: '/fun', label: 'Fun', icon: Star },
-    { path: '/more', label: 'More', icon: Gift },
-  ];
-
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full px-6 py-3 flex gap-4 md:gap-8 shadow-2xl">
-      {links.map(({ path, label, icon: Icon }) => (
-        <Link
-          key={path}
-          to={path}
-          className={`flex flex-col items-center gap-1 transition-colors ${
-            location.pathname === path ? 'text-rose-400' : 'text-zinc-500 hover:text-rose-300'
-          }`}
-        >
-          <Icon size={20} className={location.pathname === path ? 'drop-shadow-[0_0_8px_rgba(251,113,133,0.8)]' : ''} />
-          <span className="text-[9px] md:text-[10px] uppercase tracking-widest">{label}</span>
-        </Link>
-      ))}
+    <nav className="fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 gap-2 rounded-full border border-white/40 bg-white/70 px-2.5 py-2.5 shadow-[0_20px_80px_rgba(244,114,182,0.2)] backdrop-blur-2xl md:gap-4 md:px-4">
+      {appRoutes.map(({ path, label, icon: Icon }) => {
+        const active = location.pathname === path;
+
+        return (
+          <Link
+            key={path}
+            to={path}
+            aria-label={label}
+            className={`flex flex-col items-center gap-1 rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] transition-all ${
+              active ? 'bg-rose-500/10 text-rose-600' : 'text-slate-500 hover:bg-white/70 hover:text-rose-500'
+            }`}
+          >
+            <Icon size={17} className={active ? 'text-rose-500' : ''} />
+            <span>{label}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }
@@ -44,8 +46,7 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      {/* @ts-expect-error - React Router v6 Routes type doesn't officially support key, but it's needed for AnimatePresence */}
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location}>
         <Route path="/" element={<Home />} />
         <Route path="/message" element={<Message />} />
         <Route path="/gallery" element={<Gallery />} />
@@ -58,33 +59,64 @@ function AnimatedRoutes() {
 
 export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isMusicMuted, setIsMusicMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Target: July 6th, 2026, 00:00:00 IST (UTC+5:30)
-    const targetDate = new Date('2026-07-05T18:30:00Z').getTime();
-    if (Date.now() >= targetDate) {
+    if (!surpriseConfig.enableCountdown) {
+      setIsUnlocked(true);
+      return;
+    }
+
+    if (Date.now() >= unlockTimestamp) {
       setIsUnlocked(true);
     }
   }, []);
 
-  const handleUnlock = () => {
-    setIsUnlocked(true);
-  };
+  useEffect(() => {
+    const audio = new Audio(surpriseConfig.musicFile);
+    audio.loop = true;
+    audio.volume = 0.25;
+    audio.preload = 'auto';
+    audio.muted = true;
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !isUnlocked) {
+      return;
+    }
+
+    audio.muted = isMusicMuted;
+
+    if (!isMusicMuted) {
+      void audio.play().catch(() => undefined);
+    } else {
+      audio.pause();
+    }
+  }, [isUnlocked, isMusicMuted]);
 
   return (
     <BrowserRouter>
-      <div className="bg-zinc-950 min-h-screen text-rose-50 overflow-hidden font-sans selection:bg-rose-900/50">
+      <div className="relative min-h-screen overflow-hidden bg-[#fffaf8] text-slate-700 selection:bg-pink-200/40">
+        <PremiumBackground />
         <SparkleCursor />
-        
+
         <AnimatePresence>
           {!isUnlocked && (
             <motion.div
               key="lockscreen"
-              exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-              transition={{ duration: 1, ease: 'easeInOut' }}
+              exit={{ opacity: 0, scale: 1.05, filter: 'blur(12px)' }}
+              transition={{ duration: 0.9, ease: 'easeInOut' }}
               className="absolute inset-0 z-50"
             >
-              <LockScreen onUnlock={handleUnlock} />
+              <LockScreen onUnlock={() => setIsUnlocked(true)} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -93,11 +125,19 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
             className="relative min-h-screen"
           >
             <AnimatedRoutes />
             <Navigation />
+            <button
+              type="button"
+              onClick={() => setIsMusicMuted((current: boolean) => !current)}
+              className="fixed right-4 top-4 z-40 rounded-full border border-white/70 bg-white/75 p-3 text-rose-500 shadow-[0_18px_50px_rgba(244,114,182,0.16)] backdrop-blur-xl transition hover:scale-105"
+              aria-label={isMusicMuted ? 'Enable music' : 'Mute music'}
+            >
+              {isMusicMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
           </motion.div>
         )}
       </div>

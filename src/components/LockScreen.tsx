@@ -1,34 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, Unlock } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { Lock, Unlock, Sparkles } from 'lucide-react';
+import { surpriseConfig } from '../config/surprise';
 
 interface LockScreenProps {
   onUnlock: () => void;
 }
 
 export function LockScreen({ onUnlock }: LockScreenProps) {
-  const [timeLeft, setTimeLeft] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isUnlocked, setIsUnlocked] = useState(false);
-
-  // Target: July 6th, 2026, 00:00:00 IST (UTC+5:30)
-  const targetDate = new Date('2026-07-05T18:30:00Z').getTime();
+  const targetDate = new Date(`${surpriseConfig.countdownDate}T${surpriseConfig.countdownTime}`).getTime();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
+    const interval = window.setInterval(() => {
+      const now = Date.now();
       const distance = targetDate - now;
 
-      if (distance < 0 || isUnlocked) {
-        clearInterval(interval);
+      if (distance <= 0 || isUnlocked) {
+        window.clearInterval(interval);
         if (!isUnlocked) {
           setIsUnlocked(true);
-          setTimeout(onUnlock, 1500); // Wait a bit before fully opening
+          window.setTimeout(onUnlock, 1400);
         }
         return;
       }
@@ -41,73 +34,55 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
       });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [targetDate, isUnlocked, onUnlock]);
+    return () => window.clearInterval(interval);
+  }, [isUnlocked, onUnlock, targetDate]);
 
   return (
-    <div className="fixed inset-0 bg-zinc-950 flex flex-col items-center justify-center text-rose-100 z-50 overflow-hidden font-sans">
-      {/* Sparkles background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-rose-300 rounded-full"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              opacity: Math.random() * 0.5 + 0.3,
-            }}
-            animate={{
-              y: [null, Math.random() * -100 - 50],
-              opacity: [null, 0],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.18),_transparent_30%),linear-gradient(135deg,_#fff8fb_0%,_#fdf2f8_45%,_#f5ecff_100%)] text-slate-800">
+      <div className="absolute inset-0 opacity-75">
+        {[...Array(28)].map((_, index) => (
+          <motion.span
+            key={index}
+            className="absolute h-2 w-2 rounded-full bg-pink-300/70"
+            initial={{ x: `${(index * 37) % 100}%`, y: `${(index * 13) % 100}%`, opacity: 0.25 }}
+            animate={{ y: [0, -70, 0], opacity: [0.25, 0.9, 0.25] }}
+            transition={{ duration: 4 + index * 0.18, repeat: Infinity, ease: 'easeInOut' }}
           />
         ))}
       </div>
 
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, type: "spring" }}
-        className="relative z-10 flex flex-col items-center"
+        transition={{ duration: 0.8, type: 'spring' }}
+        className="relative z-10 mx-4 w-full max-w-3xl rounded-[2.2rem] border border-white/70 bg-white/70 px-6 py-10 text-center shadow-[0_35px_110px_rgba(244,114,182,0.2)] backdrop-blur-2xl sm:px-10"
       >
         <motion.div
-          className="mb-8 text-rose-400"
-          animate={isUnlocked ? { scale: 1.2, rotate: [0, -10, 10, -10, 10, 0] } : {}}
-          transition={{ duration: 0.5 }}
+          className="mb-6 flex justify-center text-rose-400"
+          animate={isUnlocked ? { scale: 1.08, rotate: [0, -8, 8, -4, 0] } : {}}
+          transition={{ duration: 0.4 }}
         >
-          {isUnlocked ? <Unlock size={64} /> : <Lock size={64} />}
+          {isUnlocked ? <Unlock size={56} /> : <Lock size={56} />}
         </motion.div>
 
-        <h1 
-          className="text-3xl md:text-5xl mb-2 tracking-wide text-center"
-          style={{ fontFamily: 'Georgia', fontWeight: 'bold' }}
-        >
-          For Malkin / Devi ji
-        </h1>
-        <p className="text-rose-300/80 mb-12 text-sm md:text-base uppercase tracking-widest text-center">
-          A magical surprise awaits
-        </p>
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-rose-400">
+          <Sparkles size={14} />
+          A little surprise for you
+        </div>
+
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-rose-500 sm:text-5xl">{surpriseConfig.heroTitle}</h1>
+        <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">{surpriseConfig.countdownMessage}</p>
 
         {!isUnlocked ? (
-          <div className="flex gap-4 md:gap-8 text-center">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             <TimeUnit value={timeLeft.days} label="Days" />
             <TimeUnit value={timeLeft.hours} label="Hours" />
-            <TimeUnit value={timeLeft.minutes} label="Mins" />
-            <TimeUnit value={timeLeft.seconds} label="Secs" />
+            <TimeUnit value={timeLeft.minutes} label="Minutes" />
+            <TimeUnit value={timeLeft.seconds} label="Seconds" />
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl text-rose-300 tracking-widest"
-          >
-            UNLOCKING...
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-10 text-xl uppercase tracking-[0.32em] text-rose-500">
+            Opening your little world...
           </motion.div>
         )}
       </motion.div>
@@ -117,13 +92,9 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
 
 function TimeUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center">
-      <div className="text-4xl md:text-5xl font-mono font-light text-rose-200 mb-2 w-16 md:w-20 lg:w-24 bg-rose-950/50 rounded-xl py-4 border border-rose-900/50 backdrop-blur-md shadow-lg flex items-center justify-center">
-        {value.toString().padStart(2, '0')}
-      </div>
-      <div className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-rose-400/90 font-semibold">
-        {label}
-      </div>
+    <div className="rounded-2xl border border-rose-100 bg-white/85 px-3 py-4 shadow-[0_12px_32px_rgba(244,114,182,0.12)] backdrop-blur-xl">
+      <div className="text-3xl font-semibold text-rose-500 sm:text-4xl">{value.toString().padStart(2, '0')}</div>
+      <div className="mt-1 text-[10px] uppercase tracking-[0.28em] text-slate-500">{label}</div>
     </div>
   );
 }

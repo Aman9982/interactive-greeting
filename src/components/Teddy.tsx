@@ -1,13 +1,11 @@
 import { motion } from 'motion/react';
-import React from 'react';
 
 interface TeddyProps {
   className?: string;
   delay?: number;
-  key?: React.Key;
 }
 
-export function Teddy({ className = "", delay = 0 }: TeddyProps) {
+export function Teddy({ className = '', delay = 0 }: TeddyProps) {
   return (
     <motion.div
       className={`relative w-24 h-24 md:w-32 md:h-32 ${className}`}
